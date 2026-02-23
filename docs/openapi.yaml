@@ -1,0 +1,207 @@
+openapi: 3.0.3
+info:
+  title: DJs API
+  version: 1.0.0
+  description: Especificacion OpenAPI para CRUD de DJs.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/djs:
+    get:
+      summary: Listar DJs
+      tags: [DJs]
+      responses:
+        '200':
+          description: Lista de DJs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DJ'
+    post:
+      summary: Crear DJ
+      tags: [DJs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DJCreateInput'
+      responses:
+        '201':
+          description: DJ creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DJ'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/djs/{id}:
+    get:
+      summary: Obtener DJ por id
+      tags: [DJs]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: DJ encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DJ'
+        '404':
+          description: DJ no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Actualizar DJ por id
+      tags: [DJs]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DJUpdateInput'
+      responses:
+        '200':
+          description: DJ actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DJ'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: DJ no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Eliminar DJ por id
+      tags: [DJs]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: DJ eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: DJ eliminado.
+        '404':
+          description: DJ no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: ObjectId del DJ
+      schema:
+        type: string
+        pattern: '^[a-fA-F0-9]{24}$'
+  schemas:
+    DJ:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 66d8f53f38d11ed09f2e4892
+        stageName:
+          type: string
+          minLength: 2
+          maxLength: 60
+          example: Carl Cox
+        genre:
+          type: string
+          enum: [house, techno, trance, edm, drum_and_bass, hiphop, other]
+          example: techno
+        country:
+          type: string
+          minLength: 2
+          maxLength: 56
+          example: UK
+        yearsActive:
+          type: integer
+          minimum: 0
+          maximum: 80
+          example: 35
+        isLegend:
+          type: boolean
+          default: false
+          example: true
+      required: [_id, stageName, genre, country, yearsActive, isLegend]
+
+    DJCreateInput:
+      type: object
+      description: Modelo simplificado a 5 campos de entrada.
+      properties:
+        stageName:
+          type: string
+          minLength: 2
+          maxLength: 60
+        genre:
+          type: string
+          enum: [house, techno, trance, edm, drum_and_bass, hiphop, other]
+        country:
+          type: string
+          minLength: 2
+          maxLength: 56
+        yearsActive:
+          type: integer
+          minimum: 0
+          maximum: 80
+        isLegend:
+          type: boolean
+      required: [stageName, genre, country, yearsActive]
+
+    DJUpdateInput:
+      type: object
+      properties:
+        stageName:
+          type: string
+          minLength: 2
+          maxLength: 60
+        genre:
+          type: string
+          enum: [house, techno, trance, edm, drum_and_bass, hiphop, other]
+        country:
+          type: string
+          minLength: 2
+          maxLength: 56
+        yearsActive:
+          type: integer
+          minimum: 0
+          maximum: 80
+        isLegend:
+          type: boolean
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Error de validacion
