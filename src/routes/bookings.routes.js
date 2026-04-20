@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Booking } from "../models/Booking.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -13,13 +14,13 @@ router.post("/", async (req, res, next) => {
     } catch (e) { next(e); }
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", requireAuth, async (req, res, next) => {
     try {
         res.json(await Booking.find().populate(fullPopulate));
     } catch (e) { next(e); }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", requireAuth, async (req, res, next) => {
     try {
         const item = await Booking.findById(req.params.id).populate(fullPopulate);
         if (!item) return res.status(404).json({ message: "Booking no encontrado." });

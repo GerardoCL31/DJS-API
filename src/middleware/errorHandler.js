@@ -11,6 +11,10 @@ export function errorHandler(err, req, res, next) {
         return res.status(400).json({ message: `ID inválido en '${err.path}'.` });
     }
 
+    if (err?.code === 11000) {
+        return res.status(409).json({ message: "Ya existe un recurso con esos datos." });
+    }
+
     console.error(err);
     res.status(500).json({ message: "Error interno del servidor" });
 }

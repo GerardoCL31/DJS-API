@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { DJ } from "../models/DJ.js";
+import { requireAuth, requireRole } from "../middleware/auth.js";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+router.post("/", requireAuth, requireRole("admin"), async (req, res, next) => {
     try { res.status(201).json(await DJ.create(req.body)); }
     catch (e) { next(e); }
 });
@@ -32,7 +33,7 @@ router.put("/:id", async (req, res, next) => {
     } catch (e) { next(e); }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", requireAuth, requireRole("admin"), async (req, res, next) => {
     try {
         const deleted = await DJ.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ message: "DJ no encontrado." });
